@@ -29,6 +29,36 @@ server.tool()(tools.search_glossary)
 
 # TODO(宿題・基礎): get_lecture_summary も公開しよう
 
+# 宿題・実装：make_quiz を公開し、範囲外の回の返し方を比べる
+# A・B・C のうち1つだけを有効にする（ツール名と説明文は3つとも同じ）
+
+# A：return 版（tools.make_quiz は範囲外のときメッセージを return する）
+server.tool()(tools.make_quiz)
+
+
+# B：普通の例外を投げる版
+def make_quiz_raise(lecture: int) -> str:
+    result = tools.make_quiz(lecture)
+    if "用語集にありません" in result:
+        raise ValueError(result)
+    return result
+
+
+# C：ToolError を投げる版
+from mcp.server.mcpserver.exceptions import ToolError
+
+
+def make_quiz_toolerror(lecture: int) -> str:
+    result = tools.make_quiz(lecture)
+    if "用語集にありません" in result:
+        raise ToolError(result)
+    return result
+
+
+# server.tool(name="make_quiz", description=tools.make_quiz.__doc__)(make_quiz_raise)
+# server.tool(name="make_quiz", description=tools.make_quiz.__doc__)(make_quiz_toolerror)
+
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="用語集 MCP サーバー")
